@@ -1,0 +1,160 @@
+<html>
+
+<head>
+  <script type="text/javascript" src="js/three.js-master/build/three.min.js"></script>
+  <script type="text/javascript" src="js/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+  <script type="text/javascript" src="js/node_modules/moment/moment.js"></script>
+  <link rel="stylesheet" href="css/index.css">
+  <meta charset="UTF-8">
+</head>
+
+<body>
+  <header class="topNavigation">
+    <p>Demo System</p>
+  </header>
+
+  <div id="WebGL-area"></div>
+  <div style="height:40%; width:40%; float: left; margin: 20px;">
+    <canvas id="myLineChart"></canvas>
+  </div>
+
+  <script type="text/javascript">
+    /**
+    * webサーバとHTTP通信
+    * ライダーデータの取得
+    */
+    // function getValue() {
+    //   return new Promise((resolve, reject) => {
+    //     var req = new XMLHttpRequest();
+    //     req.open("get", "http://192.168.100.201:1234/get_value", true);
+    //     req.onload = () => {
+    //       if (req.readyState === 4 && req.status === 200) {
+    //         resolve(req.response);
+    //       } else {
+    //         alert(req.status);
+    //         reject(new Error(req.statusText));
+    //       }
+    //     };
+    //     req.onerror = () => {
+    //       reject(new Error(req.statusText));
+    //     };
+    //     req.send(null);
+    //   });
+    // }
+
+    async function init() {
+      /**
+      * 表示箇所を生成するためのシーンオブジェクト
+      * @type {Object} 
+      */
+      var scene = new THREE.Scene();
+      /**
+      * モデルをレンダリングするためのレンダラーオブジェクト
+      * @type {Object} 
+      */
+      var renderer = new THREE.WebGLRenderer();
+      renderer.setSize(690, 460);
+      document.getElementById("WebGL-area").appendChild(renderer.domElement);
+      /**
+      * モデルの視点を決めるためのカメラオブジェクト
+      * @type {Object} 
+      */
+      var camera = new THREE.PerspectiveCamera(45, 1.5, 0.1, 1000);
+      camera.position.set(30, 45, 30);
+      camera.lookAt(scene.position);
+      /**
+      * モデルを回転させる
+      * @type {Object} 
+      */
+      var controls = new THREE.OrbitControls(camera);
+      controls.autoRotate = true; //自動周回
+      /**
+      * 座標軸を表示させる
+      * @type {Object} 
+      */
+      var axes = new THREE.AxisHelper(100);
+      scene.add(axes);
+
+
+      /**
+      * サーバから受け取ったデータを管理
+      * @type {Object} 
+      */
+      var value;
+      /**
+      * 距離データを管理
+      * @type {Array} 
+      */
+      var dis = [];
+      /**
+      * 角度データを管理
+      * @type {Array} 
+      */
+      var rot = [];
+      /**
+      * データの個数を管理
+      * @type {Number} 
+      */
+      var count_point;
+      /**
+      * 補正値を管理
+      * @type {Number} 
+      */
+      var error_degree;
+
+      value = await getValue();
+      value = JSON.parse(value);
+      dis = value.dist;
+      rot = value.rot;
+      count_point = value.count;
+      error_degree = value.error_degree;
+
+      /**
+      * 形状オブジェクトの生成
+      * @type {Object} 
+      */
+      var geometry = new THREE.Geometry();
+
+      for (var i = 0; i < count_point; i++) {
+        if (rot[i] > 300 - error_degree) {
+          break;
+        }
+        /**
+        * 回転角度の計算
+        * @type {Number} 
+        */
+        var rotation = rot[i] * (360 / (300 - error_degree));
+        var x = (dis[i] * Math.cos(rotation * (Math.PI / 180))) / 2;
+        var y = (dis[i] * Math.sin(rotation * (Math.PI / 180))) / 2;
+        geometry.vertices.push(new THREE.Vector3(x, 0, y));
+      }
+
+      /**
+      * 材質オブジェクトの生成
+      * @type {Object} 
+      */
+      var material = new THREE.ParticleBasicMaterial({ color: 0xFF0000, size: 10.0 });
+      /**
+      * 点オブジェクトの生成
+      * @type {Object} 
+      */
+      var particles = new THREE.ParticleSystem(geometry, material);
+      scene.add(particles);
+
+
+      render();
+      /**
+      * 3Dモデルの更新
+      */
+      function render() {
+        controls.update();
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+      }
+    }
+    window.onload = init
+  </script>
+</body>
+
+</html>
