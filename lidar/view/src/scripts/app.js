@@ -13,7 +13,7 @@ var OrbitControls = require("three-orbitcontrols");
   function getCSV() {
     return new Promise((resolve, reject) => {
       var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
-      req.open("get", "../data/measure.csv", true); // アクセスするファイルを指定
+      req.open("get", "../data/measure_glass.csv", true); // アクセスするファイルを指定
       req.send(null); // HTTPリクエストの発行
 
       // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ	
