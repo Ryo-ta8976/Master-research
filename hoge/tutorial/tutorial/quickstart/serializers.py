@@ -1,4 +1,4 @@
-from myappserver.myapp.models import PointCloud
+from tutorial.quickstart.models import PointCloud
 from rest_framework import serializers
 
 

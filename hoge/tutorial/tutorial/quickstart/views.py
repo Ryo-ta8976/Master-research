@@ -1,6 +1,6 @@
-from myappserver.myapp.models import PointCloud
+from tutorial.quickstart.models import PointCloud
 from rest_framework import viewsets
-from myappserver.myapp.serializers import PointCloudSerializer
+from tutorial.quickstart.serializers import PointCloudSerializer
 
 
 class PointCloudViewSet(viewsets.ModelViewSet):
