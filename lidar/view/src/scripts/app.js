@@ -1,5 +1,6 @@
 var THREE = require('three');
 var OrbitControls = require("three-orbitcontrols");
+//var https=require('https');
 
 (function(){
   var scene, camera, renderer, controls;
@@ -34,6 +35,18 @@ var OrbitControls = require("three-orbitcontrols");
     }
 
     return result;
+  }
+
+  function getData(){
+    const id=1;
+    fetch(`http://127.0.0.1:8000/pointcloud/${encodeURIComponent(id)}`)
+    .then(response => {
+        console.log(response.status); // => 200
+        return response.json().then(data => {
+            // JSONパースされたオブジェクトが渡される
+            console.log(data); // => {...}
+        });
+    });
   }
 
   async function init() {
@@ -72,6 +85,7 @@ var OrbitControls = require("three-orbitcontrols");
      var geometry = new THREE.Geometry();
 
     var data=await getCSV(); //CSVデータの読み込み
+    var hoge=getData();
     for (var i = 0; i < data.length; i++){
       geometry.vertices.push(new THREE.Vector3(data[i][0]/25, data[i][2]/25, data[i][1]/25));
     }
