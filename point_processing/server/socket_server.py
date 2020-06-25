@@ -1,9 +1,10 @@
 import socket
 import urllib.request
 import json
+import requests
 
 PORT = 5000
-BUFFER_SIZE = 20000
+BUFFER_SIZE = 1024
 num=0
 x=""
 y=""
@@ -11,22 +12,9 @@ z=""
 
 # エンドポイント
 url='http://127.0.0.1:8000/pointcloud/'
-# リクエストパラメータ
-params={
-    'x': '[3,0,0,0,0]',
-    'y': '[3,0,0,0,0]',
-    'z': '[3,0,0,0,0]',
-}
 headers = {
     'Content-Type': 'application/json',
 }
-# リクエスト生成
-req = urllib.request.Request(url, json.dumps(params).encode(), headers)
-
-# with urllib.request.urlopen(req) as res:
-#     body=json.load(res)
-
-#     print(res.code)
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(('192.168.56.1', PORT))
@@ -35,23 +23,63 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         (connection, client) = s.accept()
         try:
             print('Client connected', client)
-            data = connection.recv(BUFFER_SIZE)
+            data_sum = ''
+            while True:
+                data = connection.recv(BUFFER_SIZE) #1024バイトづつ分割して受信する
+                data_sum = data_sum + data.decode("utf-8") #受信した分だけ足していく
+                if not data:
+                    break
+            #print(data_sum) #受信したデータを表示
+            
             #print(data.decode("utf-8"))
             if(num==0):
-                x+=data.decode("utf-8")
+                #x+=data_sum.decode("utf-8")
+                x=data_sum
                 num+=1
-                print("ok")
+                print("x")
+                print(len(x))
+                #print(x)
             elif(num==1):
-                y+=data.decode("utf-8")
+                y=data_sum
                 num+=1
+                print("y")
+                print(len(y))
             else:
-                z+=data.decode("utf-8")
+                z=data_sum
+                
+                print("z")
+                print(len(z))
+
+                # リクエストパラメータ
+                params={
+                    'x': x,
+                    'y': y,
+                    'z': z,
+                }
+                # params={
+                #     'x': "4,0,0,0,0",
+                #     'y': "4,0,0,0,0",
+                #     'z': "4,0,0,0,0",
+                # }
+
+                # リクエスト生成
+                # req = urllib.request.Request(url, json.dumps(params).encode(), headers)
+
+                # with urllib.request.urlopen(req) as res:
+                #     body=json.load(res)
+
+                #     print(res.code)
+                
+                with requests.post(url, headers=headers, json=params) as res:
+                    print(res.status_code)
+
+                #データの初期化
+                x=""
+                y=""
+                z=""
                 num=0
             
 
             #connection.send(data.upper())
         finally:
-            print(x)
-            print(y)
-            print(z)
             connection.close()

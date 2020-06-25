@@ -13,6 +13,14 @@ pcl/io/pcd_io.h
 -
 pcl/point_types.h
 -
+fstream
+-
+string
+-
+sstream
+-
+vector
+-
 
 /usr/local/include/eigen3/Eigen/Cholesky
 Core
