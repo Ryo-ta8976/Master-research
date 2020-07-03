@@ -1,8 +1,8 @@
-var THREE = require('three');
+var THREE = require("three");
 var OrbitControls = require("three-orbitcontrols");
 //var https=require('https');
 
-(function(){
+(function () {
   var scene, camera, renderer, controls;
   var geometry, material, mesh, axes, particles;
   //var result = []; // 最終的な二次元配列を入れるための配列
@@ -17,106 +17,121 @@ var OrbitControls = require("three-orbitcontrols");
       req.open("get", "../data/measure_glass.csv", true); // アクセスするファイルを指定
       req.send(null); // HTTPリクエストの発行
 
-      // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ	
+      // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ
       req.onload = function () {
         resolve(convertCSVtoArray(req.responseText)); // 渡されるのは読み込んだCSVデータ
-      }
+      };
     });
   }
 
   // 読み込んだCSVデータを二次元配列に変換する関数convertCSVtoArray()の定義
-  function convertCSVtoArray(str){ // 読み込んだCSVデータが文字列として渡される
+  function convertCSVtoArray(str) {
+    // 読み込んだCSVデータが文字列として渡される
     var result = []; // 最終的な二次元配列を入れるための配列
     var tmp = str.split("\n"); // 改行を区切り文字として行を要素とした配列を生成
 
     // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
-    for(var i=0;i<tmp.length;++i){
-        result[i] = tmp[i].split(',');
+    for (var i = 0; i < tmp.length; ++i) {
+      result[i] = tmp[i].split(",");
     }
 
     return result;
   }
 
-  function getData(){
-    const id=1;
-    fetch(`http://127.0.0.1:8000/pointcloud/${encodeURIComponent(id)}`)
-    .then(response => {
+  function getData() {
+    const id = 11;
+    const result = [];
+    return fetch(`http://127.0.0.1:8000/pointcloud/${encodeURIComponent(id)}`)
+      .then((response) => {
         console.log(response.status); // => 200
-        return response.json().then(data => {
-            // JSONパースされたオブジェクトが渡される
-            console.log(data); // => {...}
-        });
-    });
+        return response.json();
+      })
+      .then((data) => {
+        // JSONパースされたオブジェクトが渡される
+        result[0] = data.x.split(",");
+        result[1] = data.y.split(",");
+        result[2] = data.z.split(",");
+
+        return result;
+      });
   }
 
   async function init() {
+    const SCALE = 30; //縮尺
+    const POINT = 9600; //点群の数
 
     /**
-    * 表示箇所を生成するためのシーンオブジェクト
-    * @type {Object} 
-    */
+     * 表示箇所を生成するためのシーンオブジェクト
+     * @type {Object}
+     */
     scene = new THREE.Scene();
-     
-     /**
+
+    /**
      * モデルの視点を決めるためのカメラオブジェクト
-     * @type {Object} 
+     * @type {Object}
      */
     camera = new THREE.PerspectiveCamera(45, 1.5, 0.1, 1000);
     camera.position.set(30, 45, 30);
-    camera.fov = 90; 
+    camera.fov = 90;
     camera.lookAt(scene.position);
 
     //controls = new OrbitControls(camera);
     //controls = new OrbitControls(camera, renderer.domElement);
     //controls.update();
     //controls.autoRotate = true;
-    
-     /**
+
+    /**
      * 座標軸を表示させる
-     * @type {Object} 
+     * @type {Object}
      */
     axes = new THREE.AxisHelper(100);
     scene.add(axes);
 
     /**
-      * 形状オブジェクトの生成
-      * @type {Object} 
-      */
-     var geometry = new THREE.Geometry();
+     * 形状オブジェクトの生成
+     * @type {Object}
+     */
+    var geometry = new THREE.Geometry();
 
-    var data=await getCSV(); //CSVデータの読み込み
-    var hoge=getData();
-    for (var i = 0; i < data.length; i++){
-      geometry.vertices.push(new THREE.Vector3(data[i][0]/25, data[i][2]/25, data[i][1]/25));
+    //var data=await getCSV(); //CSVデータの読み込み
+    var data = await getData();
+    //for (var i = 0; i < data.length; i++){
+    for (var i = 0; i < POINT; i++) {
+      //geometry.vertices.push(new THREE.Vector3(data[i][0]/SCALE, data[i][2]/SCALE, data[i][1]/SCALE));　//csvデータ
+      geometry.vertices.push(
+        new THREE.Vector3(
+          data[0][i] / SCALE,
+          data[2][i] / SCALE,
+          data[1][i] / SCALE
+        )
+      ); //x, z, y
     }
-   
-     
 
-     /**
+    /**
      * 材質オブジェクトの生成
-     * @type {Object} 
+     * @type {Object} i
      */
-     var material = new THREE.ParticleBasicMaterial({ color: 0xFF0000, size: 0.5 });
-     /**
+    var material = new THREE.ParticleBasicMaterial({
+      color: 0xff0000,
+      size: 0.5,
+    });
+    /**
      * 点オブジェクトの生成
-     * @type {Object} 
+     * @type {Object}
      */
-     particles = new THREE.ParticleSystem(geometry, material);
-     scene.add(particles);
-    
+    particles = new THREE.ParticleSystem(geometry, material);
+    scene.add(particles);
 
-     /**
+    /**
      * モデルをレンダリングするためのレンダラーオブジェクト
-     * @type {Object} 
+     * @type {Object}
      */
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(600, 600);
-    document.body.appendChild( renderer.domElement );
-
+    document.body.appendChild(renderer.domElement);
   }
 
   function animate() {
-
     //controls.update();
     requestAnimationFrame(animate);
 
