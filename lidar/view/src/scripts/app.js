@@ -1,45 +1,51 @@
-var THREE = require("three");
-var OrbitControls = require("three-orbitcontrols");
-//var https=require('https');
+let THREE = require("three");
+let OrbitControls = require("three-orbitcontrols");
+//let https=require('https');
 
 (function () {
-  var scene, camera, renderer, controls;
-  var geometry, material, mesh, axes, particles;
-  //var result = []; // 最終的な二次元配列を入れるための配列
+  let scene, camera, renderer, controls;
+  let geometry, material, mesh, axes, particles;
+  //let result = []; // 最終的な二次元配列を入れるための配列
+  let id = 11; // 点群id
+
+  /**
+   * 表示箇所を生成するためのシーンオブジェクト
+   * @type {Object}
+   */
+  scene = new THREE.Scene();
 
   init();
   animate();
 
   //CSVファイルを読み込む関数getCSV()の定義
-  function getCSV() {
-    return new Promise((resolve, reject) => {
-      var req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
-      req.open("get", "../data/measure_glass.csv", true); // アクセスするファイルを指定
-      req.send(null); // HTTPリクエストの発行
+  // function getCSV() {
+  //   return new Promise((resolve, reject) => {
+  //     let req = new XMLHttpRequest(); // HTTPでファイルを読み込むためのXMLHttpRrequestオブジェクトを生成
+  //     req.open("get", "../data/measure_glass.csv", true); // アクセスするファイルを指定
+  //     req.send(null); // HTTPリクエストの発行
 
-      // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ
-      req.onload = function () {
-        resolve(convertCSVtoArray(req.responseText)); // 渡されるのは読み込んだCSVデータ
-      };
-    });
-  }
+  //     // レスポンスが返ってきたらconvertCSVtoArray()を呼ぶ
+  //     req.onload = function () {
+  //       resolve(convertCSVtoArray(req.responseText)); // 渡されるのは読み込んだCSVデータ
+  //     };
+  //   });
+  // }
 
   // 読み込んだCSVデータを二次元配列に変換する関数convertCSVtoArray()の定義
-  function convertCSVtoArray(str) {
-    // 読み込んだCSVデータが文字列として渡される
-    var result = []; // 最終的な二次元配列を入れるための配列
-    var tmp = str.split("\n"); // 改行を区切り文字として行を要素とした配列を生成
+  // function convertCSVtoArray(str) {
+  //   // 読み込んだCSVデータが文字列として渡される
+  //   let result = []; // 最終的な二次元配列を入れるための配列
+  //   let tmp = str.split("\n"); // 改行を区切り文字として行を要素とした配列を生成
 
-    // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
-    for (var i = 0; i < tmp.length; ++i) {
-      result[i] = tmp[i].split(",");
-    }
+  //   // 各行ごとにカンマで区切った文字列を要素とした二次元配列を生成
+  //   for (let i = 0; i < tmp.length; ++i) {
+  //     result[i] = tmp[i].split(",");
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
   function getData() {
-    const id = 11;
     const result = [];
     return fetch(`http://127.0.0.1:8000/pointcloud/${encodeURIComponent(id)}`)
       .then((response) => {
@@ -59,12 +65,6 @@ var OrbitControls = require("three-orbitcontrols");
   async function init() {
     const SCALE = 30; //縮尺
     const POINT = 9600; //点群の数
-
-    /**
-     * 表示箇所を生成するためのシーンオブジェクト
-     * @type {Object}
-     */
-    scene = new THREE.Scene();
 
     /**
      * モデルの視点を決めるためのカメラオブジェクト
@@ -91,12 +91,12 @@ var OrbitControls = require("three-orbitcontrols");
      * 形状オブジェクトの生成
      * @type {Object}
      */
-    var geometry = new THREE.Geometry();
+    geometry = new THREE.Geometry();
 
-    //var data=await getCSV(); //CSVデータの読み込み
-    var data = await getData();
-    //for (var i = 0; i < data.length; i++){
-    for (var i = 0; i < POINT; i++) {
+    //let data=await getCSV(); //CSVデータの読み込み
+    let data = await getData();
+    //for (let i = 0; i < data.length; i++){
+    for (let i = 0; i < POINT; i++) {
       //geometry.vertices.push(new THREE.Vector3(data[i][0]/SCALE, data[i][2]/SCALE, data[i][1]/SCALE));　//csvデータ
       geometry.vertices.push(
         new THREE.Vector3(
@@ -109,9 +109,9 @@ var OrbitControls = require("three-orbitcontrols");
 
     /**
      * 材質オブジェクトの生成
-     * @type {Object} i
+     * @type {Object}
      */
-    var material = new THREE.ParticleBasicMaterial({
+    material = new THREE.ParticleBasicMaterial({
       color: 0xff0000,
       size: 0.5,
     });
@@ -129,6 +129,14 @@ var OrbitControls = require("three-orbitcontrols");
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(600, 600);
     document.body.appendChild(renderer.domElement);
+
+    // id指定で点群の検索処理
+    document.getElementById("form-button").onclick = function () {
+      console.log(document.getElementById("number").value);
+      id = parseInt(document.getElementById("number").value);
+      init();
+      animate();
+    };
   }
 
   function animate() {
