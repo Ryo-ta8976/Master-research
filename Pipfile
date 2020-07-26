@@ -6,10 +6,6 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-open3d-python = "*"
-requests = "*"
-open3d = "*"
-opencv-python = "==4.1.2.30"
 
 [requires]
-python_version = "2.7"
+python_version = "3.7"

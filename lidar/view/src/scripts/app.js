@@ -8,12 +8,6 @@ let OrbitControls = require("three-orbitcontrols");
   //let result = []; // 最終的な二次元配列を入れるための配列
   let id = 11; // 点群id
 
-  /**
-   * 表示箇所を生成するためのシーンオブジェクト
-   * @type {Object}
-   */
-  scene = new THREE.Scene();
-
   init();
   animate();
 
@@ -65,6 +59,12 @@ let OrbitControls = require("three-orbitcontrols");
   async function init() {
     const SCALE = 30; //縮尺
     const POINT = 9600; //点群の数
+
+    /**
+     * 表示箇所を生成するためのシーンオブジェクト
+     * @type {Object}
+     */
+    scene = new THREE.Scene();
 
     /**
      * モデルの視点を決めるためのカメラオブジェクト
