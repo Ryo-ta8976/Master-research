@@ -2,6 +2,7 @@ import open3d as o3d
 import numpy as np
 import math
 import time
+import matplotlib.pyplot as plt
 
 # 平面と点の距離閾値
 DISTANCE =0.01
@@ -11,6 +12,7 @@ print("Load a ply point cloud, print it, and render it")
 pcd = o3d.io.read_point_cloud("./test_pcd.pcd")
 print(pcd)
 print(np.asarray(pcd.points))
+# 軸オブジェクトの生成
 mesh_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(
         size=1000, origin=[0, 0, 0])
 o3d.visualization.draw_geometries([pcd, mesh_frame])
@@ -42,8 +44,6 @@ for x, y, z in out_arr:
     break
 
 Px=(-b*Py-c*Pz-d)/a
-print(Px)
-
 
 # 法線ベクトルの取得
 nx=a
@@ -52,25 +52,32 @@ nz=c
 
 
 # なす角の計算
-theta=math.degrees(math.acos(nz/math.sqrt(a*a+b*b+c*c)))
-phi=math.degrees(math.acos(nx/math.sqrt(a*a+b*b)))
+theta=math.acos(nz/math.sqrt(nx*nx+ny*ny+nz*nz))
+if(ny>=0):
+  phi=math.acos(nx/math.sqrt(nx*nx+ny*ny))
+else:
+  phi=math.acos(nx/math.sqrt(nx*nx+ny*ny))+math.pi
+
 print(theta)
+print(phi)
 
 
 # 回転行列の生成
-y_arr = np.matrix([[math.cos(theta), 0, math.sin(theta)], [0, 1, 0], [-1*math.sin(theta), 0, math.cos(theta)]])
-z_arr=np.matrix([[math.cos(phi), -1*math.sin(phi), 0], [math.sin(phi), math.cos(phi), 0], [0, 0, 1]])
+y_arr = np.matrix([[math.cos(-theta), 0, math.sin(-theta)], [0, 1, 0], [-1*math.sin(-theta), 0, math.cos(-theta)]])
 print(y_arr)
+z_arr=np.matrix([[math.cos(-phi), -1*math.sin(-phi), 0], [math.sin(-phi), math.cos(-phi), 0], [0, 0, 1]])
+print(z_arr)
 
 
 # 点群のアフィン変換
 processed_arr=np.array([[0,0,0]])
-print(processed_arr.shape)
 for x, y, z in out_arr:
   # 平行移動
   arr=np.array([[x-Px, y-Py, z-Pz]])
+  # 回転移動
   arr=np.dot(arr, z_arr)
   arr=np.dot(arr, y_arr)
+  # 回転後の点群配列の生成
   processed_arr = np.append(processed_arr, arr, axis=0)
 
 processed_arr = np.delete(processed_arr, 0, 0)
@@ -90,3 +97,18 @@ result_pcd = o3d.io.read_point_cloud("./processed.pcd")
 o3d.visualization.draw_geometries([result_pcd, mesh_frame])
 print("平面抽出：{0}".format(t2-t1))
 print("アフィン変換：{0}".format(t4-t3))
+
+
+# グラフ表示
+yy=[]
+zz=[]
+processed_arr=np.array(processed_arr)
+for x, y, z in processed_arr:
+  if(x>0 and x<10):
+    print(y)
+    print(z)
+    yy.append(y)
+    zz.append(z)
+
+plt.scatter(yy, zz)
+plt.show()

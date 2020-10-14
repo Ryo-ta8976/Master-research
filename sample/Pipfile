@@ -4,15 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-flake8 = "*"
 
 [packages]
-django = "==2.2.8"
-djongo = "==1.2.33"
-djangorestframework = "*"
+open3d = "*"
+numpy = "*"
+matplotlib = "*"
+requests = "*"
 
 [requires]
 python_version = "3.8"
-
-[scripts]
-start = "python myappserver/manage.py runserver"

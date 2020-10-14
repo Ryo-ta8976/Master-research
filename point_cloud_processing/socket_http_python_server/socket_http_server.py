@@ -3,15 +3,15 @@ import urllib.request
 import json
 import requests
 
-PORT = 5000
+PORT = 5555
 BUFFER_SIZE = 1024
-num=0
-x=""
-y=""
-z=""
+num = 0
+x = ""
+y = ""
+z = ""
 
-# エンドポイント
-url='http://127.0.0.1:8000/pointcloud/'
+# Djangoサーバエンドポイント
+url = 'http://127.0.0.1:8000/pointcloud/'
 headers = {
     'Content-Type': 'application/json',
 }
@@ -25,38 +25,38 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         try:
             print('Client connected', client)
             data_sum = ''
-            count=0
+            count = 0
             while True:
-                data = connection.recv(BUFFER_SIZE) #1024バイトづつ分割して受信する
-                data_sum = data_sum + data.decode("utf-8") #受信した分だけ足していく
-                count+=1
+                data = connection.recv(BUFFER_SIZE)  # 1024バイトづつ分割して受信する
+                data_sum = data_sum + data.decode("utf-8")  # 受信した分だけ足していく
+                count += 1
                 if not data:
                     print("データ量:"+str((1024*count)/1000)+"kbyte")
-                    count=0
+                    count = 0
                     break
-            #print(data_sum) #受信したデータを表示
+            # print(data_sum) #受信したデータを表示
 
-            #print(data.decode("utf-8"))
-            if(num==0):
-                #x+=data_sum.decode("utf-8")
-                x=data_sum
-                num+=1
+            # print(data.decode("utf-8"))
+            if(num == 0):
+                # x+=data_sum.decode("utf-8")
+                x = data_sum
+                num += 1
                 print("x")
                 print(len(x))
-                #print(x)
-            elif(num==1):
-                y=data_sum
-                num+=1
+                # print(x)
+            elif(num == 1):
+                y = data_sum
+                num += 1
                 print("y")
                 print(len(y))
             else:
-                z=data_sum
+                z = data_sum
 
                 print("z")
                 print(len(z))
 
                 # リクエストパラメータ
-                data={
+                data = {
                     'x': x,
                     'y': y,
                     'z': z,
@@ -80,13 +80,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     print(res.status_code)
                     # print(res.content)
 
-                #データの初期化
-                x=""
-                y=""
-                z=""
-                num=0
+                # データの初期化
+                x = ""
+                y = ""
+                z = ""
+                num = 0
 
-
-            #connection.send(data.upper())
+            # connection.send(data.upper())
         finally:
             connection.close()
