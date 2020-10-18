@@ -3,24 +3,28 @@ import numpy as np
 import math
 import time
 import matplotlib.pyplot as plt
+import sys
+
+NOT_PROCESSED_FILE_PATH = "./pcd/pc_color.pcd"
+PROCESSED_FILE_PATH = "./pcd/processed.pcd"
 
 # 平面と点の距離閾値
 DISTANCE = 0.01
 
 # 点群のビジュアライズ
 print("Load a ply point cloud, print it, and render it")
-pcd = o3d.io.read_point_cloud("./mongodb.pcd")
+pcd = o3d.io.read_point_cloud(NOT_PROCESSED_FILE_PATH)
 print(pcd)
 print(np.asarray(pcd.points))
 # 軸オブジェクトの生成
 mesh_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(
-    size=1000, origin=[0, 0, 0])
+    size=1, origin=[0, 0, 0])
 o3d.visualization.draw_geometries([pcd, mesh_frame])
 
 
 # 点群の平面抽出
 t1 = time.time()
-before_pcd = o3d.io.read_point_cloud("./mongodb.pcd")
+before_pcd = o3d.io.read_point_cloud(NOT_PROCESSED_FILE_PATH)
 plane_model, inliers = before_pcd.segment_plane(distance_threshold=DISTANCE,
                                                 ransac_n=3,
                                                 num_iterations=1000)
@@ -73,6 +77,8 @@ print(z_arr)
 
 # 点群のアフィン変換
 processed_arr = np.array([[0, 0, 0]])
+print(out_arr.shape)
+sys.exit(1)
 for x, y, z in out_arr:
     # 平行移動
     arr = np.array([[x-Px, y-Py, z-Pz]])
@@ -90,10 +96,10 @@ t4 = time.time()
 # 点群のpoint cloud オブジェクト化
 after_pcd = o3d.geometry.PointCloud()
 after_pcd.points = o3d.utility.Vector3dVector(processed_arr)
-o3d.io.write_point_cloud("./processed.pcd", after_pcd)
+o3d.io.write_point_cloud(PROCESSED_FILE_PATH, after_pcd)
 
 
-result_pcd = o3d.io.read_point_cloud("./processed.pcd")
+result_pcd = o3d.io.read_point_cloud(PROCESSED_FILE_PATH)
 # mesh_frame = o3d.geometry.TriangleMesh.create_coordinate_frame(
 #         size=1000, origin=[0, 0, 0])
 o3d.visualization.draw_geometries([result_pcd, mesh_frame])
@@ -109,13 +115,13 @@ up_down = []
 processed_arr = np.array(processed_arr)
 for x, y, z in processed_arr:
     xx.append(x)
-    if(x > 100 and x < 300):
+    if(x > 5 and x < 10):
         print(y)
         print(z)
         yy.append(y)
         zz.append(z)
         # 起伏の計算
-        if(abs(z) > 100):
+        if(abs(z) > 10):
             print("up down")
             up_down.append(abs(z))
 print("最小値:{0}".format(min(xx)))

@@ -1,2 +1,4 @@
 lidar/view/node_modules
 .DS_Store
+point_cloud_processing/pcd
+point_cloud_processing/realsense/get_pcd
