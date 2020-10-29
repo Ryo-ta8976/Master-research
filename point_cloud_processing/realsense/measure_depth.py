@@ -25,7 +25,7 @@ print("laser power = ", laser_pwr)
 
 # 抽出範囲（meter）
 clipping_distance_in_meters_min = 0.11  # meter
-clipping_distance_in_meters_max = 0.65  # meter
+clipping_distance_in_meters_max = 6.00  # meter
 
 clipping_distance_min = clipping_distance_in_meters_min / depth_scale
 clipping_distance_max = clipping_distance_in_meters_max / depth_scale
@@ -46,6 +46,7 @@ try:
         # Depth画像
         depth_color_frame = rs.colorizer().colorize(depth_frame)
         depth_image = np.asanyarray(depth_frame.get_data())
+        print(depth_image)
         depth_image_3d = np.dstack((depth_image, depth_image, depth_image))
         depth_color_image = np.asanyarray(depth_color_frame.get_data())
         bg_removed = np.where((depth_image_3d > clipping_distance_min) & (

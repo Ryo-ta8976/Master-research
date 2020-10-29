@@ -11,6 +11,8 @@ numpy = "*"
 matplotlib = "*"
 requests = "*"
 opencv-python = "*"
+paramiko = "*"
+scp = "*"
 
 [requires]
 python_version = "3.8"
