@@ -3,3 +3,4 @@ lidar/view/node_modules
 point_cloud_processing/pcd
 point_cloud_processing/realsense/get_pcd
 point_cloud_processing/realsense/manage.sh.log
+predict/csv
