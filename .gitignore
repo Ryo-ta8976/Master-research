@@ -1,6 +1,7 @@
 lidar/view/node_modules
 .DS_Store
 point_cloud_processing/pcd
-point_cloud_processing/realsense/get_pcd
+point_cloud_processing/realsense/store_pcd
+point_cloud_processing/realsense/temp_point_cloud
 point_cloud_processing/realsense/manage.sh.log
 predict/csv

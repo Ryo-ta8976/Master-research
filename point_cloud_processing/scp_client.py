@@ -11,4 +11,4 @@ with paramiko.SSHClient() as ssh:
 
     # scp clientオブジェクト生成
     with scp.SCPClient(ssh.get_transport()) as scp:
-        scp.get("store_pcd/20201018_141206.pcd", "pcd/20201018_141206.pcd")
+        scp.get("store_pcd/202011/20201106_152639.tar.gz", "pcd/20201106_152639.tar.gz")
