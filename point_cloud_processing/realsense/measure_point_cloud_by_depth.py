@@ -50,6 +50,7 @@ elapsed_time = time.time() - start
 print("elapsed_time:{0}".format(elapsed_time) + "[sec]")
 
 pipeline.stop()
+print(pcd)
 o3d.io.write_point_cloud('./pc_by_depth.pcd', pcd)
 o3d.visualization.draw_geometries([pcd])
 exit(0)
