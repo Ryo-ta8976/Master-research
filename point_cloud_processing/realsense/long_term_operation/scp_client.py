@@ -1,0 +1,49 @@
+import paramiko
+import scp
+from datetime import datetime
+import tarfile
+import log
+import os
+import subprocess
+
+
+now = datetime.now()
+pcd_directory_name = now.strftime("%Y%m%d_%H%M%S") + '.tar.gz'
+
+def compress_file():
+    with tarfile.open('../store_pcd/' + pcd_directory_name, 'w:gz') as t:
+        t.add('../temp_point_cloud')
+
+    print('ファイルを圧縮しました')
+    log.log('ファイルを圧縮しました')
+
+
+def copy_comporessed_file_to_ssd():
+    path = os.path.dirname(os.path.abspath(__file__))
+    cmd = 'cp ../store_pcd/{} ../../../ssd/akiyama/{}/{}'.format(pcd_directory_name, now.strftime("%Y%m"), pcd_directory_name)
+    subprocess.call(cmd, shell=True)
+
+
+def send_file_to_server():
+    with paramiko.SSHClient() as ssh:
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        print('ssh接続')
+        ssh.connect(hostname='133.19.62.9',
+                    username='akiyama', password='InfoNetworking')
+
+        print('SCP転送開始')
+        with scp.SCPClient(ssh.get_transport(), socket_timeout=10) as scp:
+            scp.put("../store_pcd/" + pcd_directory_name, "store_pcd/" + now.strftime("%Y%m") + "/" + pcd_directory_name)
+
+        ssh.close()
+
+    print("アップロードしました")
+    log.log('アップロードしました')
+
+def main():
+  compress_file()
+  copy_comporessed_file_to_ssd()
+  send_file_to_server()
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,10 @@
+[Unit]
+Description = akiyama's measure pcd daemon
+
+[Service]
+ExecStart = /home/pi/workspace/akiyama_measure_pcd/setup.sh
+Restart = no
+Type = simple
+
+[Install]
+WantedBy = multi-user.target
