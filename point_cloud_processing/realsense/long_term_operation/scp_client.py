@@ -25,8 +25,10 @@ def check_directory_exist():
         subprocess.call(cmd, shell=True)
     if not (os.path.exists('../../../ssd/akiyama/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d")))):
         cmd = 'mkdir ../../../ssd/akiyama/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d"))
+        subprocess.call(cmd, shell=True)
     if not (os.path.exists('../../../ssd/akiyama/{}/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H")))):
-        cmd='mkdir ../../../ssd/akiyama/{}/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H"))
+        cmd = 'mkdir ../../../ssd/akiyama/{}/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H"))
+        subprocess.call(cmd, shell=True)
 
 
 def copy_compressed_file_to_ssd():
