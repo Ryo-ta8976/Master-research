@@ -19,9 +19,18 @@ def compress_file():
 
 
 def copy_comporessed_file_to_ssd():
-    path = os.path.dirname(os.path.abspath(__file__))
-    cmd = 'cp ../store_pcd/{} ../../../ssd/akiyama/{}/{}'.format(pcd_directory_name, now.strftime("%Y%m"), pcd_directory_name)
+    # path = os.path.dirname(os.path.abspath(__file__))
+    cmd = 'sudo cp -a ../store_pcd/{} ../../../ssd/akiyama/{}/{}/{}/{}'.format(pcd_directory_name, now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H"), pcd_directory_name)
     subprocess.call(cmd, shell=True)
+    print('ファイルをコピーしました')
+    log.log('ファイルをコピーしました')
+
+
+def delete_comporessed_file():
+    cmd = 'rm -r ../store_pcd/{}'.format(pcd_directory_name)
+    subprocess.call(cmd, shell=True)
+    print('元のファイルを削除しました')
+    log.log('元のファイルを削除しました')
 
 
 def send_file_to_server():
@@ -43,6 +52,7 @@ def send_file_to_server():
 def main():
   compress_file()
   copy_comporessed_file_to_ssd()
+  delete_comporessed_file()
   send_file_to_server()
 
 if __name__ == '__main__':
