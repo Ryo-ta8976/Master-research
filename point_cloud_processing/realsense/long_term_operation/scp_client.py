@@ -10,6 +10,7 @@ import subprocess
 now = datetime.now()
 pcd_directory_name = now.strftime("%Y%m%d_%H%M%S") + '.tar.gz'
 
+
 def compress_file():
     with tarfile.open('../store_pcd/' + pcd_directory_name, 'w:gz') as t:
         t.add('../temp_point_cloud')
@@ -18,9 +19,19 @@ def compress_file():
     log.log('ファイルを圧縮しました')
 
 
-def copy_comporessed_file_to_ssd():
+def check_directory_exist():
+    if not (os.path.exists('../../../ssd/akiyama/{}'.format(now.strftime("%Y%m")))):
+        cmd = 'mkdir ../../../ssd/akiyama/{}'.format(now.strftime("%Y%m"))
+        subprocess.call(cmd, shell=True)
+    if not (os.path.exists('../../../ssd/akiyama/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d")))):
+        cmd = 'mkdir ../../../ssd/akiyama/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d"))
+    if not (os.path.exists('../../../ssd/akiyama/{}/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H")))):
+        cmd='mkdir ../../../ssd/akiyama/{}/{}/{}'.format(now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H"))
+
+
+def copy_compressed_file_to_ssd():
     # path = os.path.dirname(os.path.abspath(__file__))
-    cmd = 'sudo cp -a ../store_pcd/{} ../../../ssd/akiyama/{}/{}/{}/{}'.format(pcd_directory_name, now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H"), pcd_directory_name)
+    cmd = 'sudo cp ../store_pcd/{} ../../../ssd/akiyama/{}/{}/{}/{}'.format(pcd_directory_name, now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H"), pcd_directory_name)
     subprocess.call(cmd, shell=True)
     print('ファイルをコピーしました')
     log.log('ファイルをコピーしました')
@@ -49,11 +60,14 @@ def send_file_to_server():
     print("アップロードしました")
     log.log('アップロードしました')
 
+
 def main():
   compress_file()
-  copy_comporessed_file_to_ssd()
+  check_directory_exist()
+  copy_compressed_file_to_ssd()
   delete_comporessed_file()
   send_file_to_server()
+
 
 if __name__ == '__main__':
     main()

@@ -38,7 +38,7 @@ def ndarray_to_csv(file_name, ndarray):
 
 print('change depth array to csv')
 log.log('change depth array to csv')
-ndarray_to_csv('./temp_point_cloud/depth.csv', depth_image)
+ndarray_to_csv('../temp_point_cloud/depth.csv', depth_image)
 # print('color to csv')
 # ndarray_to_csv('temp_point_cloud/color.csv', color_image)
 
