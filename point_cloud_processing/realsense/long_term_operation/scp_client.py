@@ -54,8 +54,8 @@ def send_file_to_server():
                     username='akiyama', password='InfoNetworking')
 
         print('SCP転送開始')
-        with scp.SCPClient(ssh.get_transport(), socket_timeout=10) as scp:
-            scp.put("../store_pcd/" + pcd_directory_name, "store_pcd/" + now.strftime("%Y%m") + "/" + pcd_directory_name)
+        with scp.SCPClient(ssh.get_transport(), socket_timeout=10) as scp_client:
+            scp_client.put("../../../ssd/akiyama/{}/{}/{}/{}".format(now.strftime("%Y%m"), now.strftime("%m%d"), now.strftime("%d%H"), pcd_directory_name), "store_pcd/" + now.strftime("%Y%m") + "/" + pcd_directory_name)
 
         ssh.close()
 
