@@ -1,0 +1,12 @@
+[Unit]
+Description = akiyama's measure pcd daemon
+
+[Service]
+ExecStart = /home/pi/workspace/akiyama_measure_pcd/long_term_operation/shellscript/manage.sh
+Restart = no
+Type = simple
+StandardOutput = append:/home/pi/workspace/akiyama_measure_pcd/long_term_operation/service/service.log
+StandardError = append:/home/pi/workspace/akiyama_measure_pcd/long_term_operation/service/service_error.log
+
+[Install]
+WantedBy = multi-user.target
